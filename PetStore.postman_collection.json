@@ -1,0 +1,443 @@
+{
+	"info": {
+		"_postman_id": "d86779b6-cf5c-4645-ba7c-d7ec7c7d2a60",
+		"name": "PetStore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11106668"
+	},
+	"item": [
+		{
+			"name": "Get Username",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var responseBody;\r",
+							"var url = pm.collectionVariables.get(\"petstore_url\") + \"/user/createWithArray\";\r",
+							"pm.collectionVariables.set(\"firstname\", pm.variables.replaceIn('{{$randomFirstName}}'))\r",
+							"\r",
+							"pm.collectionVariables.set(\"lastname\", pm.variables.replaceIn('{{$randomLastName}}'))\r",
+							"pm.collectionVariables.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'))\r",
+							"pm.collectionVariables.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'))\r",
+							"pm.collectionVariables.set(\"phone\", pm.variables.replaceIn('{{$randomPhoneNumber}}'))\r",
+							"pm.collectionVariables.set(\"username\", pm.collectionVariables.get(\"firstname\")+ \"TEST\")\r",
+							"var bodySend2 = JSON.stringify(\r",
+							"        [{\r",
+							"            \"id\": 0,\r",
+							"            \"username\": pm.collectionVariables.get(\"username\"),\r",
+							"            \"firstName\": pm.collectionVariables.get(\"firstname\"),\r",
+							"            \"lastName\": pm.collectionVariables.get(\"lastname\"),\r",
+							"            \"email\": pm.collectionVariables.get(\"email\"),\r",
+							"            \"password\": pm.collectionVariables.get(\"password\"),\r",
+							"            \"phone\": pm.collectionVariables.get(\"phone\"),\r",
+							"            \"userStatus\": 0\r",
+							"        }]\r",
+							"    );\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: url,\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Content-Type': 'application/json',\r",
+							"        'accept': 'application/json',\r",
+							"        //'Authorization': pm.environment.get(\"auth_token_private_key\")\r",
+							"    },\r",
+							"    body: bodySend2\r",
+							"}, function (err, res) {\r",
+							"    responseBody = res.json();\r",
+							"\r",
+							"    console.log(res.json());\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate user\", function () {\r",
+							"\r",
+							"    var user = [pm.collectionVariables.get('username'),pm.collectionVariables.get('firstname'), pm.collectionVariables.get('lastname'), pm.collectionVariables.get('email'), pm.collectionVariables.get('password'), pm.collectionVariables.get('phone')]\r",
+							"\r",
+							"    utils.validateUser(jsonData, user)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{petstore_url}}/user/{{username}}",
+					"host": [
+						"{{petstore_url}}"
+					],
+					"path": [
+						"user",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var responseBody;\r",
+							"var url = pm.collectionVariables.get(\"petstore_url\") + \"/user/login?username=\" + pm.collectionVariables.get('username')+'&password=' +pm.collectionVariables.get('password');\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: url,\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'accept': 'application/json',\r",
+							"        //'Authorization': pm.environment.get(\"auth_token_private_key\")\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    responseBody = res.json();\r",
+							"\r",
+							"    console.log(res.json());\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate LogOut\", function () {\r",
+							"\r",
+							"    var login = [200, \"unknown\", \"ok\"]\r",
+							"\r",
+							"    utils.validateLogout(jsonData, login)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{petstore_url}}/user/logout",
+					"host": [
+						"{{petstore_url}}"
+					],
+					"path": [
+						"user",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate Login\", function () {\r",
+							"\r",
+							"    var login = [200, \"unknown\", \"logged in user session:\"]\r",
+							"\r",
+							"    utils.validateLogin(jsonData, login)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{petstore_url}}/user/login?username={{username}}&password={{password}}",
+					"host": [
+						"{{petstore_url}}"
+					],
+					"path": [
+						"user",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "{{username}}"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Available",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate available\", function () {\r",
+							"    var length = jsonData.length\r",
+							"    var pet = [200, length, \"available\"]\r",
+							"\r",
+							"    utils.validateStatus(jsonData, pet)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{petstore_url}}/pet/findByStatus?status=available",
+					"host": [
+						"{{petstore_url}}"
+					],
+					"path": [
+						"pet",
+						"findByStatus"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "available"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate available\", function () {\r",
+							"    utils.validateId(jsonData, 1)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{petstore_url}}/pet/1",
+					"host": [
+						"{{petstore_url}}"
+					],
+					"path": [
+						"pet",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate create order\", function () {\r",
+							"    \r",
+							"    var order = [0, \"2023-09-28T20:29:12.461\", true]\r",
+							"\r",
+							"    utils.validateOrder(jsonData, order)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 0,\r\n  \"petId\": 0,\r\n  \"quantity\": 0,\r\n  \"shipDate\": \"2023-09-28T20:29:12.461Z\",\r\n  \"status\": \"placed\",\r\n  \"complete\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{petstore_url}}/store/order",
+					"host": [
+						"{{petstore_url}}"
+					],
+					"path": [
+						"store",
+						"order"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"utils = {",
+					"    validateUser: function (jsonData, user) {",
+					"",
+					"        pm.expect(jsonData.username).to.be.eql(user[0], \"fallo al validar el username\")",
+					"        pm.expect(jsonData.firstName).to.be.eql(user[1], \"fallo al validar el firstName\")",
+					"        pm.expect(jsonData.lastName).to.be.eql(user[2], \"fallo al validar el lastName\")",
+					"        pm.expect(jsonData.email).to.be.eql(user[3], \"fallo al validar el email\")",
+					"        pm.expect(jsonData.password).to.be.eql(user[4], \"fallo al validar el password\")",
+					"        pm.expect(jsonData.phone).to.be.eql(user[5], \"fallo al validar el phone\")",
+					"    },",
+					"    validateLogin: function (jsonData, login) {",
+					"",
+					"        pm.expect(jsonData.code).to.be.eql(login[0], \"fallo al validar el code\")",
+					"        pm.expect(jsonData.type).to.be.eql(login[1], \"fallo al validar el type\")",
+					"        pm.expect(jsonData.message).contains(login[2], \"fallo al validar el message\")",
+					"    },",
+					"    validateStatus: function (jsonData, pet) {",
+					"        for (var i = 0; i < pet[1]; i++) {",
+					"            pm.expect(jsonData[i].status).to.be.eq(pet[2]);",
+					"        }",
+					"    },",
+					"    validateLogout: function (jsonData, logout) {",
+					"        pm.expect(jsonData.code).to.be.eql(logout[0], \"fallo al validar el code\")",
+					"        pm.expect(jsonData.type).to.be.eql(logout[1], \"fallo al validar el type\")",
+					"        pm.expect(jsonData.message).contains(logout[2], \"fallo al validar el message\")",
+					"    },",
+					"    validateOrder: function (jsonData, order) {",
+					"        pm.expect(jsonData.petId).to.be.eql(order[0], \"fallo al validar el petId\")",
+					"        pm.expect(jsonData.shipDate).contains(order[1], \"fallo al validar el shipDate\")",
+					"        pm.expect(jsonData.complete).to.be.eql(order[2], \"fallo al validar el complete\")",
+					"    },",
+					"    validateId: function (jsonData, id) {",
+					"        pm.expect(jsonData.id).to.be.eql(id, \"fallo al validar el id\")",
+					"    }",
+					"",
+					"",
+					"",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "petstore_url",
+			"value": "https://petstore.swagger.io/v2",
+			"type": "string"
+		},
+		{
+			"key": "firstname",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "lastname",
+			"value": ""
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "firstName",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "phone",
+			"value": ""
+		}
+	]
+}
